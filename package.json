@@ -1,0 +1,24 @@
+{
+  "name": "ling-yao-dian",
+  "version": "1.0.0",
+  "description": "靈曜殿 - 多元算命網站（塔羅、紫微斗數、八字、星座、姓名學、面相手相）",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "iztro": "^2.5.8",
+    "lunar-javascript": "^1.7.7",
+    "multer": "^2.2.0"
+  }
+}
