@@ -36,6 +36,7 @@
       } else {
         currentBirthMethod = method;
         document.getElementById('birth-title').textContent = BIRTH_TITLES[method];
+        document.getElementById('birth-place-group').classList.toggle('hidden', method === 'astro');
         showView('view-birth');
       }
     });
@@ -116,6 +117,7 @@
       gender: document.querySelector('input[name="birth-gender"]:checked').value,
       birthDate,
       birthTime: timeUnknown.checked ? null : (timeInput.value || null),
+      birthPlace: document.getElementById('birth-place').value || null,
       question: document.getElementById('birth-question').value.trim(),
     };
 
@@ -136,18 +138,86 @@
 
   function buildBirthChartHtml(method, chart) {
     if (!chart) return '';
-    if (method === 'bazi') {
-      const p = chart.pillars;
-      return `<strong>四柱排盤</strong>\n年柱：${p.year}　月柱：${p.month}　日柱：${p.day}　時柱：${p.time || '未知（未提供時辰）'}\n生肖：${chart.shengxiao}　西洋星座：${chart.xingzuo}\n農曆：${chart.lunarDate}`;
-    }
-    if (method === 'ziwei') {
-      const lines = chart.palaces.map((p) => `${p.name}〔${p.stem}${p.branch}〕：${[...p.majorStars, ...p.minorStars].join('、') || '空宮'}`);
-      return `<strong>命宮：${chart.soul}　身宮：${chart.body}　五行局：${chart.fiveElementsClass}</strong>\n${lines.join('\n')}`;
-    }
+    if (method === 'bazi') return buildBaziChartHtml(chart);
+    if (method === 'ziwei') return buildZiweiChartHtml(chart);
     if (method === 'astro') {
       return `<strong>太陽星座：${chart.xingzuo}　生肖：${chart.shengxiao}</strong>`;
     }
     return '';
+  }
+
+  function correctionNoteHtml(chart) {
+    if (!chart.birthPlace) return '';
+    const sign = chart.offsetMinutes > 0 ? '+' : '';
+    return `<div class="chart-correction-note">已依出生地「${chart.birthPlace}」校正真太陽時：${sign}${chart.offsetMinutes} 分鐘</div>`;
+  }
+
+  function buildBaziChartHtml(chart) {
+    const cols = [
+      { label: '年柱', pillar: chart.pillars.year, wx: chart.wuxing.year, ss: null },
+      { label: '月柱', pillar: chart.pillars.month, wx: chart.wuxing.month, ss: chart.shishen.month },
+      { label: '日柱', pillar: chart.pillars.day, wx: chart.wuxing.day, ss: null },
+      { label: '時柱', pillar: chart.pillars.time, wx: chart.wuxing.time, ss: chart.shishen.time },
+    ];
+    const cells = cols.map((c) => `
+      <div class="bazi-col">
+        <div class="bazi-col-label">${c.label}</div>
+        <div class="bazi-pillar">${c.pillar || '未知'}</div>
+        <div class="bazi-wx">${c.wx || ''}</div>
+        ${c.ss ? `<div class="bazi-ss">十神：${c.ss}</div>` : ''}
+      </div>`).join('');
+
+    return `
+      <div class="rich-chart bazi-chart">${cells}</div>
+      <div class="chart-meta">生肖：${chart.shengxiao}　西洋星座：${chart.xingzuo}　農曆：${chart.lunarDate}</div>
+      ${chart.timeKnown ? '' : '<div class="chart-correction-note">未提供確切出生時辰，時柱僅供參考</div>'}
+      ${correctionNoteHtml(chart)}
+    `;
+  }
+
+  const ZIWEI_GRID = {
+    巳: [1, 1], 午: [1, 2], 未: [1, 3], 申: [1, 4],
+    辰: [2, 1], 酉: [2, 4],
+    卯: [3, 1], 戌: [3, 4],
+    寅: [4, 1], 丑: [4, 2], 子: [4, 3], 亥: [4, 4],
+  };
+
+  function buildZiweiChartHtml(chart) {
+    const cells = chart.palaces.map((p) => {
+      const [row, col] = ZIWEI_GRID[p.branch] || [1, 1];
+      const stars = [...p.majorStars, ...p.minorStars];
+      const starsHtml = stars.length
+        ? stars.map((s) => `<span class="ziwei-star">${s}</span>`).join('')
+        : '<span class="ziwei-star empty">（空宮）</span>';
+      const tags = [];
+      if (p.name === '命宮') tags.push('<span class="ziwei-tag">命</span>');
+      if (p.isBodyPalace) tags.push('<span class="ziwei-tag">身</span>');
+      return `
+        <div class="ziwei-cell" style="grid-row:${row};grid-column:${col};">
+          <div class="ziwei-cell-head">
+            <span class="ziwei-palace-name">${p.name}</span>
+            ${tags.join('')}
+          </div>
+          <div class="ziwei-ganzhi">${p.stem}${p.branch}</div>
+          <div class="ziwei-stars">${starsHtml}</div>
+        </div>`;
+    }).join('');
+
+    const center = `
+      <div class="ziwei-center">
+        <div class="ziwei-center-title">命盤總覽</div>
+        <div>命主：${chart.soul}</div>
+        <div>身主：${chart.body}</div>
+        <div>五行局：${chart.fiveElementsClass}</div>
+        <div>生肖：${chart.zodiac}</div>
+        <div>星座：${chart.sign}</div>
+      </div>`;
+
+    return `
+      <div class="rich-chart ziwei-chart">${cells}${center}</div>
+      ${chart.timeKnown ? '' : '<div class="chart-correction-note">未提供確切出生時辰，本盤以中午 12 點暫代排出，僅供參考</div>'}
+      ${correctionNoteHtml(chart)}
+    `;
   }
 
   // -------------------------------------------------------------------

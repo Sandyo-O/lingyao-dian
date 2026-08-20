@@ -92,6 +92,11 @@ async function askGemini({ system, messages, maxTokens = 6000 }) {
   return { text: response.text || '（占卜師陷入了沉思，暫時說不出話來，請稍後再試一次。）', refusal: false };
 }
 
+function formatOffset(offsetMinutes) {
+  if (!offsetMinutes) return '0 分鐘';
+  return `${offsetMinutes > 0 ? '+' : ''}${offsetMinutes} 分鐘`;
+}
+
 function fmtDaYun(list) {
   if (!list || !list.length) return '（無大運資料）';
   return list
@@ -128,12 +133,13 @@ app.post('/api/reading', rateLimit, async (req, res) => {
       userText = `我使用「${spread}」牌陣進行占卜。\n我想問的問題是：「${question || '未特別設定問題，請綜合解讀近期整體運勢'}」\n\n抽出的牌卡如下：\n${cardLines}\n\n請你以塔羅牌師的身分，先簡述每張牌在該位置的意義，接著綜合整體給出一段有故事感、具體可行動的解讀。`;
       chart = { spread, cards };
     } else if (method === 'bazi') {
-      const { name, gender, birthDate, birthTime } = req.body;
-      const data = computeBaZi({ birthDate, birthTime, gender });
+      const { name, gender, birthDate, birthTime, birthPlace } = req.body;
+      const data = computeBaZi({ birthDate, birthTime, gender, birthPlace });
       chart = data;
       userText = `請幫「${name || '這位朋友'}」（${gender === 'male' ? '男性' : '女性'}）進行八字命理解讀。
 出生資料：國曆 ${data.solarDate}（農曆 ${data.lunarDate}），生肖屬${data.shengxiao}，西洋星座為${data.xingzuo}。
 ${data.timeKnown ? '' : '（注意：使用者未提供確切出生時辰，時柱僅供參考，請在回覆中提醒此點。）'}
+${data.birthPlace ? `（已依出生地「${data.birthPlace}」做真太陽時校正，時辰調整了 ${formatOffset(data.offsetMinutes)}）` : ''}
 
 已排出的四柱（年柱/月柱/日柱/時柱）：
 年柱：${data.pillars.year}（五行：${data.wuxing.year}，十神：${data.shishen.year}）
@@ -148,11 +154,12 @@ ${fmtDaYun(data.daYun)}
 
 請以八字命理師的身分，依照上述精確排出的四柱與十神五行資料進行分析，不要另外編造干支。`;
     } else if (method === 'ziwei') {
-      const { name, gender, birthDate, birthTime } = req.body;
-      const data = computeZiWei({ birthDate, birthTime, gender });
+      const { name, gender, birthDate, birthTime, birthPlace } = req.body;
+      const data = computeZiWei({ birthDate, birthTime, gender, birthPlace });
       chart = data;
       userText = `請幫「${name || '這位朋友'}」（${gender === 'male' ? '男性' : '女性'}）進行紫微斗數命盤解讀。
 出生資料：國曆 ${data.solarDate}，農曆 ${data.lunarDate}，${data.timeRange || ''}${data.timeKnown ? '' : '（注意：使用者未提供確切出生時辰，本盤以中午12點暫代排出，命宮與各宮位僅供參考，請在回覆中提醒此點。）'}
+${data.birthPlace ? `（已依出生地「${data.birthPlace}」做真太陽時校正，時辰調整了 ${formatOffset(data.offsetMinutes)}）` : ''}
 西洋星座：${data.sign}　生肖：${data.zodiac}　五行局：${data.fiveElementsClass}
 命宮主星：${data.soul}　身宮主星：${data.body}
 
