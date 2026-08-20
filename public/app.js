@@ -421,7 +421,7 @@
   function renderError(e) {
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('reading-output').innerHTML =
-      `<p style="color:#ff8a8a">占卜過程發生了一點意外：${e.message}<br>請稍後再試一次。</p>`;
+      `<p style="color:#ff8a8a">${e.message}</p>`;
   }
 
   function renderMarkdown(text) {
@@ -483,7 +483,7 @@
       chatHistory.push({ role: 'assistant', content: data.reply });
       appendChatBubble('assistant', data.reply);
     } catch (e) {
-      appendChatBubble('assistant', `（占卜師暫時斷線了：${e.message}）`);
+      appendChatBubble('assistant', `（${e.message}）`);
     } finally {
       sendBtn.disabled = false;
     }
