@@ -345,6 +345,17 @@ textarea { min-height: 70px; resize: vertical; }
   .ziwei-chart { min-width: 480px; }
 }
 
+/* ---------- 合盤配對 ---------- */
+.person-title { color: var(--gold-soft); font-size: 1rem; margin: 0 0 0.3rem; }
+.compat-person { margin-bottom: 1rem; }
+.compat-person-title { color: var(--gold-soft); font-weight: 600; margin-bottom: 0.5rem; }
+.compat-divider {
+  text-align: center;
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin: 0.5rem 0 1.2rem;
+}
+
 .reading-output {
   background: rgba(28, 26, 66, 0.55);
   border: 1px solid rgba(212, 175, 55, 0.18);

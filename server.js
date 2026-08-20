@@ -97,6 +97,24 @@ function formatOffset(offsetMinutes) {
   return `${offsetMinutes > 0 ? '+' : ''}${offsetMinutes} 分鐘`;
 }
 
+function baziPromptBlock(label, gender, data) {
+  const genderLabel = gender === 'male' ? '男性' : '女性';
+  return `【${label}】（${genderLabel}）
+出生：國曆 ${data.solarDate}（農曆 ${data.lunarDate}），生肖${data.shengxiao}，星座${data.xingzuo}
+${data.timeKnown ? '' : '（未提供確切時辰，時柱僅供參考）'}${data.birthPlace ? `（已依出生地「${data.birthPlace}」校正真太陽時 ${formatOffset(data.offsetMinutes)}）` : ''}
+四柱：年柱 ${data.pillars.year}（五行${data.wuxing.year}，十神${data.shishen.year}）／月柱 ${data.pillars.month}（五行${data.wuxing.month}，十神${data.shishen.month}）／日柱 ${data.pillars.day}（五行${data.wuxing.day}，日主天干${data.dayMaster}）／時柱 ${data.pillars.time || '未知'}（五行${data.wuxing.time || '未知'}${data.shishen.time ? `，十神${data.shishen.time}` : ''}）`;
+}
+
+function ziweiPromptBlock(label, gender, data) {
+  const genderLabel = gender === 'male' ? '男性' : '女性';
+  return `【${label}】（${genderLabel}）
+出生：國曆 ${data.solarDate}，農曆 ${data.lunarDate}
+${data.timeKnown ? '' : '（未提供確切時辰，本盤以中午12點暫代排出，僅供參考）'}${data.birthPlace ? `（已依出生地「${data.birthPlace}」校正真太陽時 ${formatOffset(data.offsetMinutes)}）` : ''}
+西洋星座：${data.sign}　生肖：${data.zodiac}　五行局：${data.fiveElementsClass}　命宮主星：${data.soul}　身宮主星：${data.body}
+十二宮：
+${fmtPalaces(data.palaces)}`;
+}
+
 function fmtDaYun(list) {
   if (!list || !list.length) return '（無大運資料）';
   return list
@@ -183,6 +201,43 @@ ${timeKnown ? '使用者有提供出生時間，你可以合理推測上升星�
 使用者想問的問題：「${question || '未特別設定問題，請綜合解讀性格特質、感情觀、事業傾向與近期整體運勢'}」
 
 請以西洋占星師的身分進行解讀。`;
+    } else if (method === 'compat') {
+      const { system, relation, personA, personB, question } = req.body;
+      if (!personA || !personB || !personA.birthDate || !personB.birthDate) {
+        return res.status(400).json({ error: '請填寫兩人的出生日期' });
+      }
+      const RELATION_LABELS = { love: '愛情／婚姻', work: '合作／事業夥伴', friend: '朋友', family: '家人' };
+      const relationLabel = RELATION_LABELS[relation] || '關係';
+      const labelA = personA.name || 'A';
+      const labelB = personB.name || 'B';
+
+      if (system === 'ziwei') {
+        const dataA = computeZiWei(personA);
+        const dataB = computeZiWei(personB);
+        chart = { system: 'ziwei', personALabel: labelA, personBLabel: labelB, personA: dataA, personB: dataB };
+        userText = `請幫「${labelA}」與「${labelB}」進行紫微斗數合盤分析，兩人關係為：${relationLabel}。
+
+${ziweiPromptBlock(labelA, personA.gender, dataA)}
+
+${ziweiPromptBlock(labelB, personB.gender, dataB)}
+
+使用者想問的問題：「${question || `未特別設定問題，請綜合分析兩人個性契合度、相處模式、優缺點與互動建議`}」
+
+請以紫微斗數合盤老師的身分，比較兩人命盤特質的異同、互補與磨合之處，並針對「${relationLabel}」關係給出具體、有畫面感、可行動的建議，不要另外編造星曜配置。`;
+      } else {
+        const dataA = computeBaZi(personA);
+        const dataB = computeBaZi(personB);
+        chart = { system: 'bazi', personALabel: labelA, personBLabel: labelB, personA: dataA, personB: dataB };
+        userText = `請幫「${labelA}」與「${labelB}」進行八字合盤分析，兩人關係為：${relationLabel}。
+
+${baziPromptBlock(labelA, personA.gender, dataA)}
+
+${baziPromptBlock(labelB, personB.gender, dataB)}
+
+使用者想問的問題：「${question || `未特別設定問題，請綜合分析兩人個性契合度、相處模式、優缺點與互動建議`}」
+
+請以八字合盤老師的身分，比較兩人四柱五行、十神的生剋與互補之處，並針對「${relationLabel}」關係給出具體、有畫面感、可行動的建議，不要另外編造干支。`;
+      }
     } else if (method === 'name') {
       const { surname, givenName, gender, birthDate } = req.body;
       chart = { surname, givenName };

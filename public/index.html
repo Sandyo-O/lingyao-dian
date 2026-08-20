@@ -51,6 +51,11 @@
           <span class="method-name">面相手相</span>
           <span class="method-desc">上傳照片或描述五官，趣味解讀</span>
         </button>
+        <button class="method-card" data-method="compat">
+          <span class="method-icon">💞</span>
+          <span class="method-name">合盤配對</span>
+          <span class="method-desc">八字或紫微，看兩人相性與磨合</span>
+        </button>
       </div>
     </section>
 
@@ -110,30 +115,8 @@
             出生地
             <span class="hint">（用於真太陽時校正，命盤會更準；不確定可留空）</span>
           </label>
-          <select id="birth-place">
+          <select id="birth-place" class="city-select">
             <option value="">不確定／海外（不校正）</option>
-            <option value="台北市">台北市</option>
-            <option value="新北市">新北市</option>
-            <option value="基隆市">基隆市</option>
-            <option value="桃園市">桃園市</option>
-            <option value="新竹市">新竹市</option>
-            <option value="新竹縣">新竹縣</option>
-            <option value="苗栗縣">苗栗縣</option>
-            <option value="台中市">台中市</option>
-            <option value="彰化縣">彰化縣</option>
-            <option value="南投縣">南投縣</option>
-            <option value="雲林縣">雲林縣</option>
-            <option value="嘉義市">嘉義市</option>
-            <option value="嘉義縣">嘉義縣</option>
-            <option value="台南市">台南市</option>
-            <option value="高雄市">高雄市</option>
-            <option value="屏東縣">屏東縣</option>
-            <option value="宜蘭縣">宜蘭縣</option>
-            <option value="花蓮縣">花蓮縣</option>
-            <option value="台東縣">台東縣</option>
-            <option value="澎湖縣">澎湖縣</option>
-            <option value="金門縣">金門縣</option>
-            <option value="連江縣">連江縣</option>
           </select>
         </div>
 
@@ -141,6 +124,78 @@
         <textarea id="birth-question" placeholder="例如：我今年適合轉職嗎？感情運勢如何？"></textarea>
 
         <button id="btn-birth-submit" class="btn-primary">✨ 開始排盤解讀</button>
+      </div>
+    </section>
+
+    <!-- 合盤配對 -->
+    <section id="view-compat" class="view">
+      <button class="back-btn">← 換一種算命方式</button>
+      <h2 class="view-title">💞 合盤配對</h2>
+
+      <div class="form-block">
+        <label class="field-label">選擇命理系統</label>
+        <div class="spread-options">
+          <label><input type="radio" name="compat-system" value="bazi" checked> 八字合盤</label>
+          <label><input type="radio" name="compat-system" value="ziwei"> 紫微合盤</label>
+        </div>
+
+        <label class="field-label">兩人關係</label>
+        <div class="spread-options">
+          <label><input type="radio" name="compat-relation" value="love" checked> 愛情／婚姻</label>
+          <label><input type="radio" name="compat-relation" value="work"> 合作／事業</label>
+          <label><input type="radio" name="compat-relation" value="friend"> 朋友</label>
+          <label><input type="radio" name="compat-relation" value="family"> 家人</label>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <h3 class="person-title">👤 第一位</h3>
+        <label class="field-label">姓名（可留空）</label>
+        <input type="text" id="compat-a-name" placeholder="例如：小明" />
+        <label class="field-label">性別</label>
+        <div class="spread-options">
+          <label><input type="radio" name="compat-a-gender" value="male" checked> 男</label>
+          <label><input type="radio" name="compat-a-gender" value="female"> 女</label>
+        </div>
+        <label class="field-label">國曆出生日期</label>
+        <input type="date" id="compat-a-date" />
+        <label class="field-label">出生時間 <span class="hint">（不確定可勾選）</span></label>
+        <div class="time-row">
+          <input type="time" id="compat-a-time" />
+          <label class="checkbox-inline"><input type="checkbox" id="compat-a-time-unknown"> 不知道確切時辰</label>
+        </div>
+        <label class="field-label">出生地 <span class="hint">（可留空）</span></label>
+        <select id="compat-a-place" class="city-select">
+          <option value="">不確定／海外（不校正）</option>
+        </select>
+      </div>
+
+      <div class="form-block">
+        <h3 class="person-title">👤 第二位</h3>
+        <label class="field-label">姓名（可留空）</label>
+        <input type="text" id="compat-b-name" placeholder="例如：小華" />
+        <label class="field-label">性別</label>
+        <div class="spread-options">
+          <label><input type="radio" name="compat-b-gender" value="male"> 男</label>
+          <label><input type="radio" name="compat-b-gender" value="female" checked> 女</label>
+        </div>
+        <label class="field-label">國曆出生日期</label>
+        <input type="date" id="compat-b-date" />
+        <label class="field-label">出生時間 <span class="hint">（不確定可勾選）</span></label>
+        <div class="time-row">
+          <input type="time" id="compat-b-time" />
+          <label class="checkbox-inline"><input type="checkbox" id="compat-b-time-unknown"> 不知道確切時辰</label>
+        </div>
+        <label class="field-label">出生地 <span class="hint">（可留空）</span></label>
+        <select id="compat-b-place" class="city-select">
+          <option value="">不確定／海外（不校正）</option>
+        </select>
+      </div>
+
+      <div class="form-block">
+        <label class="field-label">你想問的問題（可留空）</label>
+        <textarea id="compat-question" placeholder="例如：我們適合結婚嗎？合作開公司會順利嗎？"></textarea>
+        <button id="btn-compat-submit" class="btn-primary">💞 開始合盤分析</button>
       </div>
     </section>
 

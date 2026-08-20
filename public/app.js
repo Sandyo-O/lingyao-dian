@@ -14,6 +14,24 @@
   });
 
   // -------------------------------------------------------------------
+  // 出生地下拉選單（共用同一份縣市清單，需與 lib/calendar.js 的
+  // TW_LONGITUDES 保持一致）
+  // -------------------------------------------------------------------
+  const TW_CITIES = [
+    '台北市', '新北市', '基隆市', '桃園市', '新竹市', '新竹縣', '苗栗縣', '台中市',
+    '彰化縣', '南投縣', '雲林縣', '嘉義市', '嘉義縣', '台南市', '高雄市', '屏東縣',
+    '宜蘭縣', '花蓮縣', '台東縣', '澎湖縣', '金門縣', '連江縣',
+  ];
+  document.querySelectorAll('.city-select').forEach((sel) => {
+    TW_CITIES.forEach((city) => {
+      const opt = document.createElement('option');
+      opt.value = city;
+      opt.textContent = city;
+      sel.appendChild(opt);
+    });
+  });
+
+  // -------------------------------------------------------------------
   // 方式選擇
   // -------------------------------------------------------------------
   const BIRTH_TITLES = {
@@ -33,6 +51,8 @@
         showView('view-name');
       } else if (method === 'face') {
         showView('view-face');
+      } else if (method === 'compat') {
+        showView('view-compat');
       } else {
         currentBirthMethod = method;
         document.getElementById('birth-title').textContent = BIRTH_TITLES[method];
@@ -217,6 +237,72 @@
       <div class="rich-chart ziwei-chart">${cells}${center}</div>
       ${chart.timeKnown ? '' : '<div class="chart-correction-note">未提供確切出生時辰，本盤以中午 12 點暫代排出，僅供參考</div>'}
       ${correctionNoteHtml(chart)}
+    `;
+  }
+
+  // -------------------------------------------------------------------
+  // 合盤配對
+  // -------------------------------------------------------------------
+  function wireTimeUnknown(timeId, unknownId) {
+    const timeEl = document.getElementById(timeId);
+    const unknownEl = document.getElementById(unknownId);
+    unknownEl.addEventListener('change', () => {
+      timeEl.disabled = unknownEl.checked;
+      if (unknownEl.checked) timeEl.value = '';
+    });
+  }
+  wireTimeUnknown('compat-a-time', 'compat-a-time-unknown');
+  wireTimeUnknown('compat-b-time', 'compat-b-time-unknown');
+
+  function collectCompatPerson(prefix) {
+    const timeUnknown = document.getElementById(`${prefix}-time-unknown`).checked;
+    return {
+      name: document.getElementById(`${prefix}-name`).value.trim(),
+      gender: document.querySelector(`input[name="${prefix}-gender"]:checked`).value,
+      birthDate: document.getElementById(`${prefix}-date`).value,
+      birthTime: timeUnknown ? null : (document.getElementById(`${prefix}-time`).value || null),
+      birthPlace: document.getElementById(`${prefix}-place`).value || null,
+    };
+  }
+
+  document.getElementById('btn-compat-submit').addEventListener('click', async () => {
+    const system = document.querySelector('input[name="compat-system"]:checked').value;
+    const relation = document.querySelector('input[name="compat-relation"]:checked').value;
+    const personA = collectCompatPerson('compat-a');
+    const personB = collectCompatPerson('compat-b');
+    if (!personA.birthDate || !personB.birthDate) { alert('請填寫兩人的出生日期'); return; }
+
+    const payload = {
+      method: 'compat',
+      system,
+      relation,
+      personA,
+      personB,
+      question: document.getElementById('compat-question').value.trim(),
+    };
+
+    showResultView('占卜師正在比對兩人的命盤，尋找緣分的軌跡……');
+    try {
+      const data = await postJSON('/api/reading', payload);
+      renderResult(data, buildCompatChartHtml(system, data.chart));
+    } catch (e) {
+      renderError(e);
+    }
+  });
+
+  function buildCompatChartHtml(system, chart) {
+    if (!chart) return '';
+    const builder = system === 'ziwei' ? buildZiweiChartHtml : buildBaziChartHtml;
+    return `
+      <div class="compat-person">
+        <div class="compat-person-title">👤 ${chart.personALabel}</div>
+        ${builder(chart.personA)}
+      </div>
+      <div class="compat-divider">💞</div>
+      <div class="compat-person">
+        <div class="compat-person-title">👤 ${chart.personBLabel}</div>
+        ${builder(chart.personB)}
+      </div>
     `;
   }
 
