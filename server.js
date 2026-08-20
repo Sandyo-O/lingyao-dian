@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const multer = require('multer');
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenAI } = require('@google/genai');
 
 const { computeBaZi } = require('./lib/bazi');
 const { computeZiWei } = require('./lib/ziwei');
@@ -11,12 +11,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
 
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('缺少 ANTHROPIC_API_KEY，請在 .env 檔案中設定。');
+if (!process.env.GEMINI_API_KEY) {
+  console.error('缺少 GEMINI_API_KEY，請在 .env 檔案中設定。');
 }
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const MODEL = 'claude-opus-5';
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const MODEL = 'gemini-3.6-flash';
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -55,24 +55,41 @@ const PERSONA = `你是「靈曜殿」的資深占卜師，精通塔羅牌、紫
 - 如果系統提供了精確排盤的結構化資料（八字四柱、紫微十二宮等），必須以該資料為準進行推論，不要自行編造干支或星曜。
 - 語氣像是一位真心關心提問者的長輩／朋友，會針對使用者提出的問題給予具體、有畫面感、可行動的建議，而不是空泛的套話。`;
 
-async function askClaude({ system, messages, maxTokens = 6000 }) {
-  const response = await client.messages.create({
+// 把 Anthropic 風格的 messages（role: user/assistant，content 可為字串或 blocks）
+// 轉成 Gemini 的 contents 格式（role: user/model，parts 陣列）。
+function toGeminiContents(messages) {
+  return messages.map((m) => {
+    const role = m.role === 'assistant' ? 'model' : 'user';
+    const parts = Array.isArray(m.content)
+      ? m.content.map((block) => (
+        block.type === 'image'
+          ? { inlineData: { mimeType: block.source.media_type, data: block.source.data } }
+          : { text: block.text }
+      ))
+      : [{ text: m.content }];
+    return { role, parts };
+  });
+}
+
+async function askGemini({ system, messages, maxTokens = 6000 }) {
+  const response = await ai.models.generateContent({
     model: MODEL,
-    max_tokens: maxTokens,
-    system,
-    messages,
-    output_config: { effort: 'medium' },
+    contents: toGeminiContents(messages),
+    config: {
+      systemInstruction: system,
+      maxOutputTokens: maxTokens,
+    },
   });
 
-  if (response.stop_reason === 'refusal') {
+  const finishReason = response.candidates?.[0]?.finishReason;
+  if (finishReason === 'SAFETY' || finishReason === 'PROHIBITED_CONTENT' || finishReason === 'BLOCKLIST') {
     return {
       text: '這位占卜師這次沈默了一下……似乎有些話題超出了他願意談論的範圍，可以換個方式再問一次嗎？',
       refusal: true,
     };
   }
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  return { text: textBlock ? textBlock.text : '（占卜師陷入了沉思，暫時說不出話來，請稍後再試一次。）', refusal: false };
+  return { text: response.text || '（占卜師陷入了沉思，暫時說不出話來，請稍後再試一次。）', refusal: false };
 }
 
 function fmtDaYun(list) {
@@ -177,7 +194,7 @@ ${birthDate ? `出生日期：${birthDate}（可作為輔助參考）` : ''}
     }
 
     const messages = [{ role: 'user', content: userText }];
-    const result = await askClaude({ system: PERSONA, messages });
+    const result = await askGemini({ system: PERSONA, messages });
 
     messages.push({ role: 'assistant', content: result.text });
 
@@ -213,7 +230,7 @@ app.post('/api/face', rateLimit, upload.single('photo'), async (req, res) => {
     }
 
     const messages = [{ role: 'user', content }];
-    const result = await askClaude({ system: PERSONA, messages });
+    const result = await askGemini({ system: PERSONA, messages });
 
     // 若是圖片訊息，之後接續聊天時改用純文字摘要，避免每次都重送整張圖片
     const seedUserText = req.file
@@ -241,7 +258,7 @@ app.post('/api/chat', rateLimit, async (req, res) => {
       return res.status(400).json({ error: '缺少對話歷史或訊息內容' });
     }
     const messages = [...history, { role: 'user', content: message }];
-    const result = await askClaude({ system: PERSONA, messages, maxTokens: 3000 });
+    const result = await askGemini({ system: PERSONA, messages, maxTokens: 3000 });
     res.json({ reply: result.text });
   } catch (err) {
     console.error(err);
