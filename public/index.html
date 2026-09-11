@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>靈曜殿｜多元命理占卜</title>
+<title>星曆｜命理占卜與合盤分析</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Cinzel:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="stars"></div>
-
   <header class="site-header">
-    <h1 class="site-title"><span class="glyph">✦</span> 靈曜殿 <span class="glyph">✦</span></h1>
-    <p class="site-subtitle">集塔羅・紫微・八字・星座・姓名・面相於一殿，為你說一段命運的故事</p>
+    <h1 class="site-title">星曆</h1>
+    <p class="site-subtitle">塔羅・紫微斗數・八字・占星・姓名學・面相 — 命理解讀與合盤分析</p>
   </header>
 
   <main id="app">
@@ -22,37 +20,37 @@
     <section id="view-select" class="view active">
       <div class="method-grid">
         <button class="method-card" data-method="tarot">
-          <span class="method-icon">🃏</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="11" height="15" rx="1.2" transform="rotate(-8 8.5 12.5)"/><rect x="9" y="4" width="11" height="16" rx="1.2"/></svg></span>
           <span class="method-name">塔羅牌</span>
           <span class="method-desc">抽牌問卜，窺看當下的訊息</span>
         </button>
         <button class="method-card" data-method="ziwei">
-          <span class="method-icon">🔮</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg></span>
           <span class="method-name">紫微斗數</span>
           <span class="method-desc">排出命盤十二宮，看性格與大限</span>
         </button>
         <button class="method-card" data-method="bazi">
-          <span class="method-icon">☯️</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V8M10 20V4M14 20V10M19 20V6"/></svg></span>
           <span class="method-name">八字命理</span>
           <span class="method-desc">四柱干支，論五行十神與大運</span>
         </button>
         <button class="method-card" data-method="astro">
-          <span class="method-icon">🌌</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6l-4.9 3.6 1.9-5.8L4 8.8h6.1z"/></svg></span>
           <span class="method-name">星座占星</span>
           <span class="method-desc">太陽星座解讀性格與運勢</span>
         </button>
         <button class="method-card" data-method="name">
-          <span class="method-icon">🖋️</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.5-1.2L18 9.3a2 2 0 000-2.8l-.5-.5a2 2 0 00-2.8 0L5.2 15.5 4 20z"/><path d="M13.5 7.5l3 3"/></svg></span>
           <span class="method-name">姓名學</span>
           <span class="method-desc">從姓名字義窺探個性印象</span>
         </button>
         <button class="method-card" data-method="face">
-          <span class="method-icon">🪞</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="15" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><path d="M9 15c1 1 5 1 6 0"/></svg></span>
           <span class="method-name">面相手相</span>
           <span class="method-desc">上傳照片或描述五官，趣味解讀</span>
         </button>
         <button class="method-card" data-method="compat">
-          <span class="method-icon">💞</span>
+          <span class="method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9.5" cy="12" r="6.5"/><circle cx="14.5" cy="12" r="6.5"/></svg></span>
           <span class="method-name">合盤配對</span>
           <span class="method-desc">八字或紫微，看兩人相性與磨合</span>
         </button>
@@ -62,7 +60,7 @@
     <!-- 塔羅牌 -->
     <section id="view-tarot" class="view">
       <button class="back-btn">← 換一種算命方式</button>
-      <h2 class="view-title">🃏 塔羅牌占卜</h2>
+      <h2 class="view-title">塔羅牌占卜</h2>
 
       <div class="form-block">
         <label class="field-label">選擇牌陣</label>
@@ -75,12 +73,12 @@
         <label class="field-label">你想問的問題（可留空）</label>
         <textarea id="tarot-question" placeholder="例如：我這段感情該不該繼續？近期換工作是好時機嗎？"></textarea>
 
-        <button id="btn-draw" class="btn-primary">🔯 抽牌</button>
+        <button id="btn-draw" class="btn-primary">抽牌</button>
       </div>
 
       <div id="tarot-cards" class="tarot-cards"></div>
 
-      <button id="btn-tarot-interpret" class="btn-primary hidden">✨ 請占卜師為我解讀</button>
+      <button id="btn-tarot-interpret" class="btn-primary hidden">請占卜師為我解讀</button>
     </section>
 
     <!-- 紫微斗數 / 八字 / 星座 共用表單樣板 -->
@@ -123,14 +121,14 @@
         <label class="field-label">你想問的問題（可留空）</label>
         <textarea id="birth-question" placeholder="例如：我今年適合轉職嗎？感情運勢如何？"></textarea>
 
-        <button id="btn-birth-submit" class="btn-primary">✨ 開始排盤解讀</button>
+        <button id="btn-birth-submit" class="btn-primary">開始排盤解讀</button>
       </div>
     </section>
 
     <!-- 合盤配對 -->
     <section id="view-compat" class="view">
       <button class="back-btn">← 換一種算命方式</button>
-      <h2 class="view-title">💞 合盤配對</h2>
+      <h2 class="view-title">合盤配對</h2>
 
       <div class="form-block">
         <label class="field-label">選擇命理系統</label>
@@ -149,7 +147,7 @@
       </div>
 
       <div class="form-block">
-        <h3 class="person-title">👤 第一位</h3>
+        <h3 class="person-title">第一位</h3>
         <label class="field-label">姓名（可留空）</label>
         <input type="text" id="compat-a-name" placeholder="例如：小明" />
         <label class="field-label">性別</label>
@@ -171,7 +169,7 @@
       </div>
 
       <div class="form-block">
-        <h3 class="person-title">👤 第二位</h3>
+        <h3 class="person-title">第二位</h3>
         <label class="field-label">姓名（可留空）</label>
         <input type="text" id="compat-b-name" placeholder="例如：小華" />
         <label class="field-label">性別</label>
@@ -195,14 +193,14 @@
       <div class="form-block">
         <label class="field-label">你想問的問題（可留空）</label>
         <textarea id="compat-question" placeholder="例如：我們適合結婚嗎？合作開公司會順利嗎？"></textarea>
-        <button id="btn-compat-submit" class="btn-primary">💞 開始合盤分析</button>
+        <button id="btn-compat-submit" class="btn-primary">開始合盤分析</button>
       </div>
     </section>
 
     <!-- 姓名學 -->
     <section id="view-name" class="view">
       <button class="back-btn">← 換一種算命方式</button>
-      <h2 class="view-title">🖋️ 姓名學解讀</h2>
+      <h2 class="view-title">姓名學解讀</h2>
 
       <div class="form-block">
         <div class="name-row">
@@ -228,15 +226,15 @@
         <label class="field-label">你想問的問題（可留空）</label>
         <textarea id="name-question" placeholder="例如：這個名字適合我嗎？給人的第一印象如何？"></textarea>
 
-        <button id="btn-name-submit" class="btn-primary">✨ 開始姓名解讀</button>
+        <button id="btn-name-submit" class="btn-primary">開始姓名解讀</button>
       </div>
     </section>
 
     <!-- 面相手相 -->
     <section id="view-face" class="view">
       <button class="back-btn">← 換一種算命方式</button>
-      <h2 class="view-title">🪞 面相手相解讀</h2>
-      <p class="privacy-note">📌 隱私提醒：上傳的照片僅會傳送給 Claude AI 進行即時分析，伺服器不會另外儲存檔案。若不放心，也可以改用文字描述五官特徵。</p>
+      <h2 class="view-title">面相手相解讀</h2>
+      <p class="privacy-note">隱私提醒：上傳的照片僅會傳送給 Claude AI 進行即時分析，伺服器不會另外儲存檔案。若不放心，也可以改用文字描述五官特徵。</p>
 
       <div class="form-block">
         <label class="field-label">性別</label>
@@ -246,8 +244,8 @@
         </div>
 
         <div class="tabs">
-          <button class="tab-btn active" data-tab="photo">📷 上傳照片</button>
-          <button class="tab-btn" data-tab="text">📝 文字描述</button>
+          <button class="tab-btn active" data-tab="photo">上傳照片</button>
+          <button class="tab-btn" data-tab="text">文字描述</button>
         </div>
 
         <div id="face-tab-photo" class="tab-panel active">
@@ -263,7 +261,7 @@
         <label class="field-label">你想問的問題（可留空）</label>
         <textarea id="face-question" placeholder="例如：我給人的第一印象如何？適合往哪個方向發展？"></textarea>
 
-        <button id="btn-face-submit" class="btn-primary">✨ 開始面相解讀</button>
+        <button id="btn-face-submit" class="btn-primary">開始面相解讀</button>
       </div>
     </section>
 
@@ -281,7 +279,7 @@
       <article id="reading-output" class="reading-output"></article>
 
       <div id="chat-box" class="chat-box hidden">
-        <h3 class="chat-title">💬 還想繼續問占卜師嗎？</h3>
+        <h3 class="chat-title">延伸提問</h3>
         <div id="chat-log" class="chat-log"></div>
         <div class="chat-input-row">
           <input type="text" id="chat-input" placeholder="輸入你的追問……" />

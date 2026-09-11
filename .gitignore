@@ -5,3 +5,4 @@ cloudflared.exe
 key-claude.txt
 /index.html
 /functions/
+.dev.vars

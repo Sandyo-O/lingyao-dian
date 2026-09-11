@@ -1,7 +1,7 @@
 {
-  "name": "ling-yao-dian",
+  "name": "xing-li",
   "version": "1.0.0",
-  "description": "靈曜殿 - 多元算命網站（塔羅、紫微斗數、八字、星座、姓名學、面相手相）",
+  "description": "星曆 - 多元算命網站（塔羅、紫微斗數、八字、星座、姓名學、面相手相）",
   "main": "server.js",
   "directories": {
     "lib": "lib"

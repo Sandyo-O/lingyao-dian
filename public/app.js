@@ -1,4 +1,4 @@
-// 靈曜殿 前端邏輯
+// 星曆 前端邏輯
 (() => {
   const views = {};
   document.querySelectorAll('.view').forEach((v) => { views[v.id] = v; });
@@ -35,9 +35,9 @@
   // 方式選擇
   // -------------------------------------------------------------------
   const BIRTH_TITLES = {
-    ziwei: '🔮 紫微斗數解讀',
-    bazi: '☯️ 八字命理解讀',
-    astro: '🌌 星座占星解讀',
+    ziwei: '紫微斗數解讀',
+    bazi: '八字命理解讀',
+    astro: '星座占星解讀',
   };
   let currentBirthMethod = null;
 
@@ -295,12 +295,12 @@
     const builder = system === 'ziwei' ? buildZiweiChartHtml : buildBaziChartHtml;
     return `
       <div class="compat-person">
-        <div class="compat-person-title">👤 ${chart.personALabel}</div>
+        <div class="compat-person-title">${chart.personALabel}</div>
         ${builder(chart.personA)}
       </div>
-      <div class="compat-divider">💞</div>
+      <div class="compat-divider">與</div>
       <div class="compat-person">
-        <div class="compat-person-title">👤 ${chart.personBLabel}</div>
+        <div class="compat-person-title">${chart.personBLabel}</div>
         ${builder(chart.personB)}
       </div>
     `;
